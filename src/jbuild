@@ -1,0 +1,7 @@
+(jbuild_version 1)
+
+(library
+ ((name eval)
+  (public_name nextjournal-ocaml)
+  (modes (byte))
+  (libraries (lwt ocaml-compiler-libs.common ocaml-compiler-libs.toplevel))))

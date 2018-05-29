@@ -1,0 +1,5 @@
+(jbuild_version 1)
+
+(library
+ ((name ocaml_eval_test)
+  (libraries (ocaml_eval))))

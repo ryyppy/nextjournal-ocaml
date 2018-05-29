@@ -1,0 +1,7 @@
+(jbuild_version 1)
+
+(executables
+ ((names (ex1))
+ (public_names (ex1))
+ (modes (byte))
+ (libraries (eval))))
