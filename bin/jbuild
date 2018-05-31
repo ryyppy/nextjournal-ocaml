@@ -1,0 +1,9 @@
+(jbuild_version 1)
+
+(executables
+ ((names (server))
+ (public_names (server))
+ (modes (byte))
+ (libraries (lwt lwt.unix eval))
+ (preprocess
+   (pps (lwt.ppx)))))
