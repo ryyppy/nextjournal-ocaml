@@ -5,10 +5,9 @@ let hello_message lang =
       ]
 
 
-  (**
-let prompt_message =
+let prompt_message () =
   `List [
-      `String "~:promt";
+      `String "~:prompt";
       `Null
   ]
 
@@ -16,11 +15,12 @@ let exn_message ?(line=0) msg =
   `List [
       `String "~:exception";
       `Assoc [
-          ("~:message", msg);
-          ("~:line", line)
+          ("~:message", `String msg);
+          ("~:line", `Int line)
         ]
     ]
 
+(**
 type payload = NoPayload
 
 let encode_payload payload =

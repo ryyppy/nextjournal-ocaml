@@ -2,7 +2,7 @@ type eval_result =
   | Initial
   | NoValue
   | OutValue of Outcometree.out_value
-  | Error
+  | Error of string
 
 let init_toploop () = Toploop.initialize_toplevel_env ()
 
@@ -34,28 +34,20 @@ let print_out_value out_value =
   | _ -> print_endline "out_value not handled"
 
 let eval str =
-  init_toploop () ;
-  let result = ref Initial in
-  (Toploop.print_out_value := fun _ value -> result := OutValue value) ;
-  let lex = Lexing.from_string str in
-  let tlphrase = Parse.toplevel_phrase lex in
-  if Toploop.execute_phrase true noop_formatter tlphrase
-  then
-    !result
-  else
-    Error
+  try
+    let open Parsetree in
+    init_toploop () ;
+    let result = ref Initial in
+    (Toploop.print_out_value := fun _ value -> result := OutValue value) ;
+    let lex = Lexing.from_string str in
+    let tpl_phrase = Ptop_def (Parse.implementation lex)
+    in
+    if Toploop.execute_phrase true noop_formatter tpl_phrase
+    then
+      !result
+    else
+      Error "No result"
+  with Syntaxerr.Error _ ->
+      Error "Syntax Error occurred"
 
-
-let eval2 str =
-  let open Parsetree in
-  init_toploop () ;
-  let result = ref Initial in
-  (Toploop.print_out_value := fun _ value -> result := OutValue value) ;
-  let lex = Lexing.from_string str in
-  let tpl_phrase = Ptop_def (Parse.implementation lex)
-  in
-  if Toploop.execute_phrase true noop_formatter tpl_phrase
-  then
-    !result
-  else
-    Error
+let eval_lwt = Lwt.wrap1 eval
