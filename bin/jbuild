@@ -4,6 +4,6 @@
  ((names (server))
  (public_names (server))
  (modes (byte))
- (libraries (lwt lwt.unix eval))
+ (libraries (lwt lwt.unix nextjournal-ocaml yojson))
  (preprocess
    (pps (lwt.ppx)))))

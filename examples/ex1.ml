@@ -1,4 +1,4 @@
-open Eval
+open Nextjournal_ocaml.Eval
 
 let print_result = function
   | OutValue v -> print_out_value v

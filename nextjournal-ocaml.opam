@@ -12,6 +12,7 @@ install: [make "install"]
 remove: ["ocamlfind" "remove" "nextjournal-ocaml"]
 depends: [
   "jbuilder" {build & >= "1.0+beta20"}
+  "atdgen" {build & >= "1.12.0"}
   "ocamlfind" {build}
   "reason"
   "ocaml-compiler-libs" {>= "10.0.0"}
