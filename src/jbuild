@@ -4,4 +4,6 @@
  ((name nextjournal_ocaml)
   (public_name nextjournal-ocaml)
   (modes (byte))
-  (libraries (lwt yojson ocaml-compiler-libs.common ocaml-compiler-libs.toplevel))))
+  (libraries (lwt yojson ocaml-compiler-libs.common ocaml-compiler-libs.toplevel))
+  (preprocess
+    (pps (lwt.ppx)))))

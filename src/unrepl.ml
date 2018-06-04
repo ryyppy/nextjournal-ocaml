@@ -20,7 +20,6 @@ let exn_message ?(line=0) msg =
         ]
     ]
 
-(**
 type payload = NoPayload
 
 let encode_payload payload =
@@ -32,4 +31,3 @@ let eval_message payload =
       `String "~:eval";
       encode_payload(payload)
     ]
-   *)

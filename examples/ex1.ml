@@ -1,5 +1,7 @@
 open Nextjournal_ocaml.Eval
 
+let print_out_value = default_print_out_value Format.std_formatter
+
 let print_result = function
   | OutValue v -> print_out_value v
   | NoValue -> print_endline "There was no result"

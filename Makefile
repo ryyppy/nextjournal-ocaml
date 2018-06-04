@@ -1,5 +1,5 @@
 SHELL = /bin/sh
-executable = ./_build/4.06.1/examples/ex1.bc
+executable = ./_build/4.06.1/examples/ex2.bc
 
 socket_server = ./_build/4.06.1/bin/server.bc
 

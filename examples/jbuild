@@ -1,7 +1,9 @@
 (jbuild_version 1)
 
 (executables
- ((names (ex1))
- (public_names (ex1))
+ ((names (ex1 ex2))
+ (public_names (ex1 ex2))
  (modes (byte))
- (libraries (nextjournal_ocaml))))
+ (libraries (lwt lwt.unix nextjournal_ocaml))
+ (preprocess
+   (pps (lwt.ppx)))))
