@@ -17,10 +17,13 @@ let default_print_out_phrase = !Toploop.print_out_phrase
 let std_fmt = Format.std_formatter
 let noop_fmt = Format.make_formatter (fun _ _ _ -> ()) ignore
 
+(* The Eval module should be stateful *)
+let _ = init_toploop ()
+
 let eval ?(fmt=noop_fmt)str =
   try
     let open Parsetree in
-    init_toploop () ;
+    (* init_toploop () ; *)
     let result = ref Initial in
     (Toploop.print_out_value := fun _ value ->
                                 default_print_out_value fmt value;
