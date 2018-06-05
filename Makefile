@@ -17,10 +17,6 @@ run-example:
 
 install: build
 
-atd:
-	atdgen -t src/unrepl.atd
-	atdgen -j src/unrepl.atd
-
 watch:
 	watchman-make -p '**/*.ml' '**/*.mli' 'Makefile' -t build
 
