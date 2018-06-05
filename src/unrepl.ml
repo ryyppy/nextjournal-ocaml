@@ -1,6 +1,6 @@
 let hello_message lang =
   `List [
-      `String "~:nextrepl/hallo";
+      `String "~:nextrepl/hello";
       `Assoc [("~:lang", `String lang)]
       ]
 
@@ -26,6 +26,7 @@ let encode_payload payload =
   match payload with
   | _ -> `Null
 
+(* check out clojure transit protocol for serialization logic *)
 let eval_message payload =
   `List [
       `String "~:eval";
