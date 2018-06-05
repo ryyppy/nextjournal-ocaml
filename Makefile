@@ -1,7 +1,7 @@
 SHELL = /bin/sh
-executable = ./_build/4.06.1/examples/ex2.bc
 
-socket_server = ./_build/4.06.1/bin/server.bc
+context = 4.06.0
+working_dir = $(realpath .)
 
 build:
 	jbuilder build --dev @install
@@ -9,11 +9,11 @@ build:
 clean:
 	jbuilder clean
 
-start: build
-	$(socket_server)
+start:
+	jbuilder exec --context=${context} bin/server.bc
 
-run: build
-	$(executable)
+run-example:
+	jbuilder exec --context=${context} examples/ex2.bc
 
 install: build
 
@@ -24,4 +24,7 @@ atd:
 watch:
 	watchman-make -p '**/*.ml' '**/*.mli' 'Makefile' -t build
 
-.PHONY: build clean build run install watch atd
+docker-run:
+	docker run -v ${working_dir}:/home/opam/nextjournal-ocaml -it nj-ocaml bash
+
+.PHONY: build clean build run-example install watch atd docker-run
