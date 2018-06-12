@@ -25,6 +25,10 @@ https://facebook.github.io/watchman/docs/install.html#installing-on-os-x-via-hom
 
 ## Building / Running
 
+The building instructions are useful to build a bytecode binary.  This is
+mostly useful for developing the code... follow the `dist` instructions to
+create a dist file.
+
 ```
 # Builds all build artifacts
 make build
@@ -41,4 +45,12 @@ make watch
 # Runs the docker container for manual building (mounts project as a volume)
 make docker-run
 ```
+## Build dist
 
+```
+# This creates a toplevel `dist/socket_server.ml` ready for nextjournal
+make dist
+
+# Test generated file
+ocaml dist/socket_server.ml
+```
