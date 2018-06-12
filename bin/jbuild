@@ -1,10 +1,8 @@
 (jbuild_version 1)
 
-(executable
- ((name server)
- (public_name server)
+(executables
+ ((names (server))
+ (public_names (server))
  (modes (byte))
- (libraries (lwt lwt.unix nextjournal-ocaml yojson))
- (ocamlc_flags -custom)
- (preprocess
-   (pps (lwt.ppx)))))
+ (libraries (compiler-libs.toplevel ocaml-compiler-libs.common unix yojson))
+ (ocamlc_flags -custom)))

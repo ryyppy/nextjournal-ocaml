@@ -1,5 +1,6 @@
 SHELL = /bin/sh
 
+mytop = mytop
 context = 4.06.0
 working_dir = $(realpath .)
 
@@ -8,6 +9,14 @@ build:
 
 clean:
 	jbuilder clean
+	rm ${mytop} || true
+
+dist:
+	mkdir -p dist
+	cat prelude.ml bin/server.ml > dist/socket_server.ml
+
+run-dist: dist
+	ocaml dist/socket_server.ml
 
 start:
 	jbuilder exec --context=${context} bin/server.bc
@@ -23,4 +32,4 @@ watch:
 docker-run:
 	docker run -v ${working_dir}:/home/opam/nextjournal-ocaml -it nj-ocaml bash
 
-.PHONY: build clean build run-example install watch atd docker-run
+.PHONY: dist build clean build run-example install watch docker-run

@@ -45,5 +45,3 @@ let eval ?(fmt=noop_fmt)str =
   with
   | Syntaxerr.Error _ -> Error "Syntax Error occurred"
   | _ -> Error "Unknown error occurred"
-
-let eval_lwt = Lwt.wrap1 eval
