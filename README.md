@@ -47,10 +47,13 @@ make docker-run
 ```
 ## Build dist
 
+Note: The generated `dist/socket_repl.ml` needs to be copied to
+`nextjournal/journal/server/resources/runtimes/ocaml/socket_repl.ml`
+
 ```
-# This creates a toplevel `dist/socket_server.ml` ready for nextjournal
+# This creates a toplevel `dist/socket_repl.ml` ready for nextjournal
 make dist
 
 # Test generated file
-ocaml dist/socket_server.ml
+ocaml dist/socket_repl.ml
 ```

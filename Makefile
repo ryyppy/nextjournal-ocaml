@@ -13,7 +13,8 @@ clean:
 
 dist:
 	mkdir -p dist
-	cat prelude.ml bin/server.ml > dist/socket_server.ml
+	# Adds the commit hash in the header
+	(git log -1 --format="(* Revision: nextjournal-ocaml: %h *)%n" ; cat prelude.ml bin/server.ml ) > dist/socket_repl.ml
 
 run-dist: dist
 	ocaml dist/socket_server.ml
