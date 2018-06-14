@@ -1,5 +1,5 @@
 let _ =
-  let module Unrepl : sig
+  let module Nextrepl : sig
         type payload = NoPayload
 
         val hello_message : string -> Yojson.Basic.json
@@ -66,7 +66,7 @@ let _ =
       (* The Server should be stateful *)
       let _ = init_toploop ()
 
-      let eval ?(fmt=noop_fmt)str =
+      let eval ?(fmt=noop_fmt) str =
         try
           let open Parsetree in
           (* init_toploop () ; *)
@@ -90,7 +90,7 @@ let _ =
             Error "No result"
         with
         | Syntaxerr.Error _ -> Error "Syntax Error occurred"
-        | _ -> Error "Unknown error occurred"
+        | _ -> Error ("Error while exec: " ^ str)
 
       let setting_up_server_socket =
         let sock = Unix.socket Unix.PF_INET Unix.SOCK_STREAM 0 in
@@ -106,16 +106,16 @@ let _ =
         flush out_chan
 
       let send_hello chan lang =
-        Unrepl.hello_message lang |> send_json chan
+        Nextrepl.hello_message lang |> send_json chan
 
       let send_prompt chan =
-        Unrepl.prompt_message () |> send_json chan
+        Nextrepl.prompt_message () |> send_json chan
 
       let send_exn chan err =
-        Unrepl.exn_message err |> send_json chan
+        Nextrepl.exn_message err |> send_json chan
 
       let send_eval chan payload =
-        Unrepl.eval_message payload |> send_json chan
+        Nextrepl.eval_message payload |> send_json chan
 
       let rec read_until_nullbyte ?(buf=Buffer.create 16) ~in_chan () =
         match input_char in_chan with
@@ -124,23 +124,29 @@ let _ =
                 read_until_nullbyte ~buf ~in_chan ()
         | exception End_of_file -> Buffer.contents buf
 
-      let rec loop in_chan out_chan =
-        (* Wait until EOF and read all lines separated with \n etc. *)
-        let program = read_until_nullbyte ~in_chan () in
-        let fmt = std_fmt in
-        let result = eval ~fmt program in
+      let loop in_chan out_chan =
+        let quit _ = exit 0 |> ignore in
+        Sys.(
+          signal sigint (Signal_handle quit) |> ignore;
+          signal sigpipe (Signal_handle quit) |> ignore;
+        );
+        while true do
+          (* Wait until EOF and read all lines separated with \n etc. *)
+          let program = read_until_nullbyte ~in_chan () in
+          let fmt = std_fmt in
+          let result = eval ~fmt program in
 
-        let () = match result with
+          match result with
           | Error msg -> send_exn out_chan msg;
-                         send_prompt out_chan;
+            send_prompt out_chan;
           | Initial
-            | OutValue _
-            | OutType _
-            | OutPhrase _ ->
-             send_eval out_chan Unrepl.NoPayload;
-             send_prompt out_chan;
-        in
-        loop in_chan out_chan
+          | OutValue _
+          | OutType _
+          | OutPhrase _ ->
+            send_eval out_chan Nextrepl.NoPayload;
+            send_prompt out_chan;
+        done
+
 
       let process_client fd =
         let cli, _sockaddr = Unix.accept fd in
