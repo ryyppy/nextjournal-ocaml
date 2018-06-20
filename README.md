@@ -56,4 +56,7 @@ make dist
 
 # Test generated file
 ocaml dist/socket_repl.ml
+
+# Run in Reason mode
+ocaml dist/socker_repl.ml --reason
 ```
