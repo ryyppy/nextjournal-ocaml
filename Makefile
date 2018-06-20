@@ -1,6 +1,5 @@
 SHELL = /bin/sh
 
-mytop = mytop
 context = 4.06.0
 working_dir = $(realpath .)
 
@@ -9,7 +8,6 @@ build:
 
 clean:
 	jbuilder clean
-	rm ${mytop} || true
 
 dist:
 	mkdir -p dist

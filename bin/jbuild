@@ -4,5 +4,5 @@
  ((names (server))
  (public_names (server))
  (modes (byte))
- (libraries (compiler-libs.toplevel ocaml-compiler-libs.common unix yojson))
+ (libraries (compiler-libs.toplevel ocaml-compiler-libs.common unix yojson reason))
  (ocamlc_flags -custom)))
