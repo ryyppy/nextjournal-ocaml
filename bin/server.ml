@@ -208,8 +208,8 @@ let _ =
 
       let rec read_until_nullbyte ?(buf=Buffer.create 16) ~in_chan () =
         match input_char in_chan with
-        | '\n' -> Buffer.contents buf
-        (* | '\x00' -> Buffer.contents buf *)
+        (* | '\n' -> Buffer.contents buf *)
+        | '\x00' -> Buffer.contents buf
         | ch -> Buffer.add_char buf ch;
                 read_until_nullbyte ~buf ~in_chan ()
         | exception End_of_file -> Buffer.contents buf
