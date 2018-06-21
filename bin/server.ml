@@ -5,6 +5,11 @@ let _ =
     | [|_; "--reason"|] -> Reason
     | _ -> OCaml
   in
+  let devmode = match Sys.getenv_opt "DEV" with
+    | Some "false"
+    | None -> false
+    | Some _ -> true
+  in
   let module Nextrepl : sig
         type payload = NoPayload
 
@@ -206,11 +211,13 @@ let _ =
       let send_eval chan payload =
         Nextrepl.eval_message payload |> send_json chan
 
+      (* Depending on if devmode is enabled, the termination
+         character will either be \n or the actual nullbyte *)
       let rec read_until_nullbyte ?(buf=Buffer.create 16) ~in_chan () =
-        match input_char in_chan with
-        (* | '\n' -> Buffer.contents buf *)
-        | '\x00' -> Buffer.contents buf
-        | ch -> Buffer.add_char buf ch;
+        match (input_char in_chan, devmode) with
+        | ('\x00', false) -> Buffer.contents buf
+        | ('\n', true) -> Buffer.contents buf
+        | (ch, _) -> Buffer.add_char buf ch;
                 read_until_nullbyte ~buf ~in_chan ()
         | exception End_of_file -> Buffer.contents buf
 

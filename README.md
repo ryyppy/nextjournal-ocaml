@@ -33,7 +33,7 @@ create a dist file.
 # Builds all build artifacts
 make build
 
-# Starts the socket-server (make sure to build first)
+# Starts the socket-server in DEV mode (make sure to build first)
 make start
 
 # Cleans all build artifacts
@@ -54,8 +54,8 @@ Note: The generated `dist/socket_repl.ml` needs to be copied to
 # This creates a toplevel `dist/socket_repl.ml` ready for nextjournal
 make dist
 
-# Test generated file
-ocaml dist/socket_repl.ml
+# Test generated file (in devmode for \n recognition)
+DEV=true ocaml dist/socket_repl.ml
 
 # Run in Reason mode
 ocaml dist/socker_repl.ml --reason

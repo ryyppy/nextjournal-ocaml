@@ -18,7 +18,7 @@ run-dist: dist
 	ocaml dist/socket_server.ml
 
 start:
-	jbuilder exec --context=${context} bin/server.bc
+	DEV=true jbuilder exec --context=${context} bin/server.bc
 
 run-example:
 	jbuilder exec --context=${context} examples/ex2.bc
