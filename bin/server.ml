@@ -174,7 +174,8 @@ let _ =
             Error "No result"
         with
         | Syntaxerr.Error _ -> Error "Syntax Error occurred"
-        (* | _ -> Error ("Error while exec: " ^ str) *)
+        | Reason_syntax_util.Error _ -> Error "Reason Parsing Error"
+        | _ -> Error ("Error while exec: " ^ str)
 
       let setting_up_server_socket =
         let sock = Unix.socket Unix.PF_INET Unix.SOCK_STREAM 0 in
