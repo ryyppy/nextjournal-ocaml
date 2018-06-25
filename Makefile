@@ -11,14 +11,14 @@ clean:
 
 dist:
 	mkdir -p dist
-	# Adds the commit hash in the header
+  # Adds the commit hash in the header
 	(git log -1 --format="(* Revision: nextjournal-ocaml: %h *)%n" ; cat prelude.ml bin/server.ml ) > dist/socket_repl.ml
 
 run-dist: dist
 	ocaml dist/socket_server.ml
 
 start:
-	DEV=true jbuilder exec --context=${context} bin/server.bc
+	NEXTREPL_DEV_SEPARATOR=true jbuilder exec --context=${context} bin/server.bc
 
 run-example:
 	jbuilder exec --context=${context} examples/ex2.bc

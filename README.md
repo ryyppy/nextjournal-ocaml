@@ -55,7 +55,7 @@ Note: The generated `dist/socket_repl.ml` needs to be copied to
 make dist
 
 # Test generated file (in devmode for \n recognition)
-DEV=true ocaml dist/socket_repl.ml
+NEXTREPL_DEV_SEPARATOR=true ocaml dist/socket_repl.ml
 
 # Run in Reason mode
 ocaml dist/socker_repl.ml --reason

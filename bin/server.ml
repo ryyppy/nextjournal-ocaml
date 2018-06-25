@@ -5,7 +5,7 @@ let _ =
     | [|_; "--reason"|] -> Reason
     | _ -> OCaml
   in
-  let devmode = match Sys.getenv_opt "DEV" with
+  let devmode = match Sys.getenv_opt "NEXTREPL_DEV_SEPARATOR" with
     | Some "false"
     | None -> false
     | Some _ -> true
@@ -69,6 +69,10 @@ let _ =
         | Error of string
 
       let init_toploop () =
+        Topfind.add_predicates ["byte"; "toploop"];
+        (* Add findlib path so Topfind is available and it won't be
+           initialized twice if the user does [#use "topfind"]. *)
+        Topdirs.dir_directory (Findlib.package_directory "findlib");
         Toploop.initialize_toplevel_env ()
 
       (* Preserve the original functions *)
@@ -138,7 +142,7 @@ let _ =
 
       let eval ?(fmt=noop_fmt) str =
         try
-          let open Parsetree in
+          (* let open Parsetree in *)
           let code = match lang with
             | OCaml -> str
             | Reason -> ocaml_from_reason str
@@ -169,14 +173,28 @@ let _ =
           (Toploop.print_out_phrase := fun _ value ->
                                        print_out_phrase fmt value;
                                        result := OutPhrase value);
+
           let lex = Lexing.from_string code in
-          let tpl_phrase = Ptop_def (Parse.implementation lex)
+          let tpl_phrases = Parse.use_file lex in
+          let exec phr =
+            if Toploop.execute_phrase true fmt phr
+            then
+              !result
+            else
+              Error "No result"
           in
-          if Toploop.execute_phrase true fmt tpl_phrase
-          then
-            !result
-          else
-            Error "No result"
+          let rec execAll phrases =
+            match phrases with
+            | [] -> Error "No result"
+            | [phr] -> exec phr
+            | phr :: next ->
+              let ret = exec phr in
+              match ret with
+              | Error _ -> ret
+              | _ -> execAll next
+          in
+          execAll tpl_phrases
+
         with
         | Syntaxerr.Error _ -> Error "Syntax Error occurred"
         | Reason_syntax_util.Error _ -> Error "Reason Parsing Error"
