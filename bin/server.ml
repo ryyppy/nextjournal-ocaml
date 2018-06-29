@@ -5,11 +5,17 @@ let _ =
     | [|_; "--reason"|] -> Reason
     | _ -> OCaml
   in
-  let devmode = match Sys.getenv_opt "NEXTREPL_DEV_SEPARATOR" with
-    | Some "false"
-    | None -> false
-    | Some _ -> true
+  let port = 9999 in
+  let (devmode, ip_bind) = match Sys.getenv_opt "NEXTREPL_DEV_SEPARATOR" with
+    | Some ("false")
+    | None -> (false, "0.0.0.0")
+    | Some _ -> (true, "127.0.0.1")
   in
+  let string_of_lang = function
+    | OCaml -> "ocaml"
+    | Reason -> "reason"
+  in
+  print_endline ("DEVMODE - Running on " ^ ip_bind ^ ":" ^ (string_of_int port) ^ " in " ^ (string_of_lang lang) ^ " mode");
   let module Nextrepl : sig
         type payload = NoPayload
 
@@ -135,18 +141,8 @@ let _ =
       (* The Server should be stateful *)
       let _ = init_toploop ()
 
-      let ocaml_from_reason str =
-        let ast = Lexing.from_string str |> Reason_toolchain.RE.implementation_with_comments in
-        Reason_toolchain.ML.print_implementation_with_comments Format.str_formatter ast;
-        Format.flush_str_formatter ()
-
       let eval ?(fmt=noop_fmt) str =
         try
-          (* let open Parsetree in *)
-          let code = match lang with
-            | OCaml -> str
-            | Reason -> ocaml_from_reason str
-            in
           (* init_toploop () ; *)
           let result = ref Initial in
           (Toploop.print_out_value := fun _ value ->
@@ -174,8 +170,12 @@ let _ =
                                        print_out_phrase fmt value;
                                        result := OutPhrase value);
 
-          let lex = Lexing.from_string code in
-          let tpl_phrases = Parse.use_file lex in
+          let lex = Lexing.from_string str in
+          let tpl_phrases = match lang with
+            | OCaml -> Parse.use_file lex
+            | Reason ->
+              List.map Reason_toolchain.To_current.copy_toplevel_phrase (Reason_toolchain.RE.use_file lex)
+            in
           let exec phr =
             if Toploop.execute_phrase true fmt phr
             then
@@ -202,16 +202,12 @@ let _ =
 
       let setting_up_server_socket =
         let sock = Unix.socket Unix.PF_INET Unix.SOCK_STREAM 0 in
-        let sockaddr = Unix.ADDR_INET (Unix.inet_addr_of_string "0.0.0.0", 9999) in
+        let sockaddr = Unix.ADDR_INET (Unix.inet_addr_of_string ip_bind, port) in
         Unix.set_close_on_exec sock;
         Unix.setsockopt sock Unix.SO_REUSEADDR true;
         Unix.bind sock sockaddr;
         Unix.listen sock 20; (* max 20 pending requests *)
         sock
-
-      let string_of_lang = function
-        | OCaml -> "ocaml"
-        | Reason -> "reason"
 
       let send_json out_chan str =
         Yojson.Basic.to_string str |> Printf.fprintf out_chan "%s";
@@ -266,7 +262,6 @@ let _ =
             send_eval out_chan Nextrepl.NoPayload;
             send_prompt out_chan;
         done
-
 
       let process_client fd =
         let cli, _sockaddr = Unix.accept fd in
